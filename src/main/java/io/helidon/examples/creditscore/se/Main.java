@@ -18,8 +18,6 @@ package io.helidon.examples.creditscore.se;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -35,7 +33,8 @@ import io.helidon.webserver.json.JsonSupport;
  */
 public final class Main {
 	
-	private static Logger logger = Logger.getLogger("Main");
+	private static Logger logger = Logger.getLogger(Main.class.getName());
+	
 
     /**
      * Cannot be instantiated.
@@ -49,13 +48,10 @@ public final class Main {
      * @throws URISyntaxException 
      */
     private static Routing createRouting() throws URISyntaxException {
-    	Path staticPath = Paths.get(ClassLoader.getSystemResource("js").toURI());
     	
-    	logger.info("Static path: " + staticPath);
-    
     	
         Routing routing = Routing.builder()
-                .register("/js", StaticContentSupport.create(staticPath))
+                .register("/js", StaticContentSupport.create("js"))
                 .register("/", StaticContentSupport.builder("/html")
                         .welcomeFileName("index.html"))
                 .register("/stylesheets", StaticContentSupport.builder("/stylesheets"))

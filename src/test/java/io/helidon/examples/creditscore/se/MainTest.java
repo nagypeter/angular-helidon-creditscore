@@ -56,28 +56,13 @@ public class MainTest {
     public void testHelloWorld() throws Exception {
         HttpURLConnection conn;
 
-        conn = getURLConnection("GET","/greet");
+        conn = getURLConnection("GET","/creditscore/healthcheck");
         Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response1");
         JsonReader jsonReader = Json.createReader(conn.getInputStream());
         JsonObject jsonObject = jsonReader.readObject();
-        Assertions.assertEquals("Hello World!", jsonObject.getString("message"),
+        Assertions.assertEquals("Service Available", jsonObject.getString("message"),
                 "default message");
 
-        conn = getURLConnection("GET", "/greet/Joe");
-        Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response2");
-        jsonReader = Json.createReader(conn.getInputStream());
-        jsonObject = jsonReader.readObject();
-        Assertions.assertEquals("Hello Joe!", jsonObject.getString("message"),
-                "hello Joe message");
-
-        conn = getURLConnection("PUT", "/greet/greeting/Hola");
-        Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response3");
-        conn = getURLConnection("GET", "/greet/Jose");
-        Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response4");
-        jsonReader = Json.createReader(conn.getInputStream());
-        jsonObject = jsonReader.readObject();
-        Assertions.assertEquals("Hola Jose!", jsonObject.getString("message"),
-                "hola Jose message");
     }
 
     private HttpURLConnection getURLConnection(String method, String path) throws Exception {
