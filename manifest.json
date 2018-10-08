@@ -1,0 +1,9 @@
+{
+  "runtime":{
+    "majorVersion":"8"
+  },
+  "startupTime" : "100",
+  "command": "java -jar $APP_HOME/creditscore-se.jar",
+  "notes": "",
+  "type":"web"
+}

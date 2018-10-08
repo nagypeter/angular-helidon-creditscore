@@ -88,10 +88,12 @@ public final class Main {
 
         // By default this will pick up application.yaml from the classpath
         Config config = Config.create();
+        
 
         // Get webserver config from the "server" section of application.yaml
         ServerConfiguration serverConfig =
-                ServerConfiguration.fromConfig(config.get("server"));
+        		ServerConfiguration.builder(config.get("server")).port(config.get("PORT").asInt(8080)).build();
+        
 
         WebServer server = WebServer.create(serverConfig, createRouting());
 
