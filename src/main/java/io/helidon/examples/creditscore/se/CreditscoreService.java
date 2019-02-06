@@ -45,7 +45,7 @@ public class CreditscoreService implements Service {
     /**
      * The config value for the key {@code greeting}.
      */
-    private static String test = CONFIG.get("test").asString("Ciao");
+    private static String test = CONFIG.get("test").asString().get();
 	
 	private static final int SCORE_MAX = 800;
 	private static final int SCORE_MIN = 550;

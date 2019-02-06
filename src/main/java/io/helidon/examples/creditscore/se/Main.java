@@ -50,13 +50,18 @@ public final class Main {
     private static Routing createRouting() throws URISyntaxException {
     	
     	
-        Routing routing = Routing.builder()
+        @SuppressWarnings("unchecked")
+		Routing routing = Routing.builder()
                 .register("/js", StaticContentSupport.create("js"))
                 .register("/", StaticContentSupport.builder("/html")
                         .welcomeFileName("index.html"))
                 .register("/stylesheets", StaticContentSupport.builder("/stylesheets"))
-                .register(JsonSupport.get())
+                .register(JsonSupport.create())
                 .register("/creditscore", new CreditscoreService())
+                .error(java.lang.Exception.class, (req, res, ex) -> { 
+                    // handle the error, set the HTTP status code
+                    res.send("Error"); 
+                })
                 .build();
         logger.info("Router: " + routing.toString());
         return routing;
@@ -89,10 +94,12 @@ public final class Main {
         // By default this will pick up application.yaml from the classpath
         Config config = Config.create();
         
+        System.out.println("AAA " + config.get("server"));
+        
 
         // Get webserver config from the "server" section of application.yaml
         ServerConfiguration serverConfig =
-        		ServerConfiguration.builder(config.get("server")).port(config.get("PORT").asInt(8080)).build();
+        		ServerConfiguration.create(config.get("server"));
         
 
         WebServer server = WebServer.create(serverConfig, createRouting());
