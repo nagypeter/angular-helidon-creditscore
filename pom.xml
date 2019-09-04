@@ -26,11 +26,12 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <helidon.version>0.11.0</helidon.version>
+        <!--helidon.version>0.11.0</helidon.version-->
+        <helidon.version>1.2.0</helidon.version>
         <!-- Default package. Will be overriden by Maven archetype -->
         <package>io.helidon.examples.quickstart.se</package>
         <mainClass>io.helidon.examples.creditscore.se.Main</mainClass>
-        <maven.compiler.source>8	</maven.compiler.source>
+        <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
         <libs.classpath.prefix>libs</libs.classpath.prefix>
         <copied.libs.dir>${project.build.directory}/${libs.classpath.prefix}</copied.libs.dir>
@@ -39,129 +40,113 @@
         <argLine>-Dfile.encoding=UTF-8</argLine>
     </properties>
 
-    <build>
-        <finalName>${project.artifactId}</finalName>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.19.1</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.junit.platform</groupId>
-                            <artifactId>junit-platform-surefire-provider</artifactId>
-                            <version>1.1.0</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.9</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.5</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addClasspath>true</addClasspath>
-                                <classpathPrefix>${libs.classpath.prefix}</classpathPrefix>
-                                <mainClass>${mainClass}</mainClass>
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${copied.libs.dir}</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>false</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <includeScope>runtime</includeScope>
-                            <excludeScope>test</excludeScope>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dockerfile</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <filtering>true</filtering>
-                                    <directory>src/main/docker</directory>
-                                    <includes>
-                                        <include>Dockerfile</include>
-                                    </includes>
-                                </resource>
-                                <resource>
-                                    <filtering>true</filtering>
-                                    <directory>src/main/k8s</directory>
-                                    <includes>
-                                        <include>app.yaml</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-      		<plugin>
-	        	<artifactId>maven-assembly-plugin</artifactId>
-        		<configuration>
-          			<descriptors>
-            			<descriptor>assembly.xml</descriptor>
-          			</descriptors>
-          			<appendAssemblyId>false</appendAssemblyId>
-        		</configuration>
-        		<executions>
-          			<execution>
-			            <id>make-assembly</id>
-			            <phase>package</phase>
-			            <goals>
-			              	<goal>single</goal>
-			            </goals>
-			          </execution>
-			    </executions>
-		    </plugin>              
-        </plugins>
-    </build>
+	<profiles>
+		<profile>
+		<id>zip</id>
+			<activation>
+		    	<activeByDefault>true</activeByDefault>
+			</activation>
+		    <build>
+		    	<plugins>
+		      		<plugin>
+			        	<artifactId>maven-assembly-plugin</artifactId>
+		        		<configuration>
+		          			<descriptors>
+		            			<descriptor>assembly.xml</descriptor>
+		          			</descriptors>
+		          			<appendAssemblyId>false</appendAssemblyId>
+		        		</configuration>
+		        		<executions>
+		          			<execution>
+					            <id>make-assembly</id>
+					            <phase>package</phase>
+					            <goals>
+					              	<goal>single</goal>
+					            </goals>
+					          </execution>
+					    </executions>
+				    </plugin>              
+		        </plugins>
+		    </build>
+	    </profile>	
+		<profile>
+		<id>jar</id>
+	    </profile>
+    </profiles>
+    
+		    <build>
+		        <finalName>${project.artifactId}</finalName>
+		        <pluginManagement>
+		            <plugins>
+		                <plugin>
+		                    <groupId>org.apache.maven.plugins</groupId>
+		                    <artifactId>maven-compiler-plugin</artifactId>
+		                    <version>3.1</version>
+		                </plugin>
+		                <plugin>
+		                    <groupId>org.apache.maven.plugins</groupId>
+		                    <artifactId>maven-surefire-plugin</artifactId>
+		                    <version>2.19.1</version>
+		                    <dependencies>
+		                        <dependency>
+		                            <groupId>org.junit.platform</groupId>
+		                            <artifactId>junit-platform-surefire-provider</artifactId>
+		                            <version>1.1.0</version>
+		                        </dependency>
+		                    </dependencies>
+		                </plugin>
+		                <plugin>
+		                    <groupId>org.apache.maven.plugins</groupId>
+		                    <artifactId>maven-dependency-plugin</artifactId>
+		                    <version>2.9</version>
+		                </plugin>
+		                <plugin>
+		                    <groupId>org.apache.maven.plugins</groupId>
+		                    <artifactId>maven-resources-plugin</artifactId>
+		                    <version>3.0.2</version>
+		                </plugin>
+		                <plugin>
+		                    <groupId>org.apache.maven.plugins</groupId>
+		                    <artifactId>maven-jar-plugin</artifactId>
+		                    <version>2.5</version>
+		                    <configuration>
+		                        <archive>
+		                            <manifest>
+		                                <addClasspath>true</addClasspath>
+		                                <classpathPrefix>${libs.classpath.prefix}</classpathPrefix>
+		                                <mainClass>${mainClass}</mainClass>
+		                            </manifest>
+		                        </archive>
+		                    </configuration>
+		                </plugin>
+		            </plugins>
+		        </pluginManagement>
+		
+		        <plugins>
+		            <plugin>
+		                <groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-dependency-plugin</artifactId>
+		                <executions>
+		                    <execution>
+		                        <id>copy-dependencies</id>
+		                        <phase>prepare-package</phase>
+		                        <goals>
+		                            <goal>copy-dependencies</goal>
+		                        </goals>
+		                        <configuration>
+		                            <outputDirectory>${copied.libs.dir}</outputDirectory>
+		                            <overWriteReleases>false</overWriteReleases>
+		                            <overWriteSnapshots>false</overWriteSnapshots>
+		                            <overWriteIfNewer>true</overWriteIfNewer>
+		                            <overWriteIfNewer>true</overWriteIfNewer>
+		                            <includeScope>runtime</includeScope>
+		                            <excludeScope>test</excludeScope>
+		                        </configuration>
+		                    </execution>
+		                </executions>
+		            </plugin>              
+		        </plugins>
+		    </build>    
 
     <dependencyManagement>
         <dependencies>
@@ -217,4 +202,31 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
+     <repositories>
+         <repository>
+             <id>ossrh-staging</id>
+             <name>OSS Sonatype Staging</name>
+             <url>https://oss.sonatype.org/content/groups/staging/</url>
+             <snapshots>
+                 <enabled>false</enabled>
+             </snapshots>
+             <releases>
+                 <enabled>true</enabled>
+             </releases>
+         </repository>
+     </repositories>
+     <pluginRepositories>
+         <pluginRepository>
+             <id>ossrh-staging</id>
+             <name>OSS Sonatype Staging</name>
+             <url>https://oss.sonatype.org/content/groups/staging/</url>
+             <snapshots>
+                 <enabled>false</enabled>
+             </snapshots>
+             <releases>
+                 <enabled>true</enabled>
+             </releases>
+         </pluginRepository>
+     </pluginRepositories>
 </project>
