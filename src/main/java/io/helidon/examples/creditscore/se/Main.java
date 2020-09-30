@@ -22,11 +22,12 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import io.helidon.config.Config;
+import io.helidon.media.jsonp.server.JsonSupport;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.ServerConfiguration;
 import io.helidon.webserver.StaticContentSupport;
 import io.helidon.webserver.WebServer;
-import io.helidon.webserver.json.JsonSupport;
+
 
 /**
  * Simple Hello World rest application.
@@ -93,9 +94,6 @@ public final class Main {
 
         // By default this will pick up application.yaml from the classpath
         Config config = Config.create();
-        
-        System.out.println("AAA " + config.get("server"));
-        
 
         // Get webserver config from the "server" section of application.yaml
         ServerConfiguration serverConfig =

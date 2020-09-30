@@ -60,7 +60,7 @@ public class MainTest {
         Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response1");
         JsonReader jsonReader = Json.createReader(conn.getInputStream());
         JsonObject jsonObject = jsonReader.readObject();
-        Assertions.assertEquals("Service Available", jsonObject.getString("message"),
+        Assertions.assertEquals("The creditscore provider is running.", jsonObject.getString("message"),
                 "default message");
 
     }

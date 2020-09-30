@@ -22,8 +22,6 @@ import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonObject;
 
-import io.helidon.common.http.Parameters;
-import io.helidon.config.Config;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.ServerRequest;
 import io.helidon.webserver.ServerResponse;
@@ -37,17 +35,6 @@ public class CreditscoreService implements Service {
 
 	private final Logger logger = Logger.getLogger(this.getClass().getName());
 	
-    /**
-     * This gets config from application.yaml on classpath
-     * and uses "app" section.
-     */
-    private static final Config CONFIG = Config.create().get("app");
-
-    /**
-     * The config value for the key {@code greeting}.
-     */
-    private static String test = CONFIG.get("test").asString().get();
-	
 	private static final int SCORE_MAX = 800;
 	private static final int SCORE_MIN = 550;
 
@@ -60,8 +47,7 @@ public class CreditscoreService implements Service {
 	public final void update(final Routing.Rules rules) {
 		rules
 			.get("/healthcheck", this::getTestMessage)
-			.post("/", this::postMethodCreditscore)
-			.get("/params", this::getMethodCreditscore);
+			.post("/", this::postMethodCreditscore);
 	}
 
     /**
@@ -71,10 +57,9 @@ public class CreditscoreService implements Service {
      */
     private void getTestMessage(final ServerRequest request,
                                    final ServerResponse response) {
-        String msg = String.format("%s %s", "Service", test);
 
         JsonObject returnObject = Json.createObjectBuilder()
-                .add("message", msg)
+                .add("message", "The creditscore provider is running.")
                 .build();
         response.send(returnObject);
     }	
@@ -93,43 +78,11 @@ public class CreditscoreService implements Service {
 		    logger.log(Level.INFO, "Request: {0}", json);
 		    response.send(
 		            Json.createObjectBuilder(json)
-		                    .add("score", getCreditscore(json))
+		                    .add("score", calculateCreditscore(json.getString("firstname"), json.getString("lastname"),
+		            				json.getString("dateofbirth"), json.getString("ssn")))
 		                    .build()
 		    );
 		});
-	}
-	
-	/**
-     * GET method to return a customer data including creditscore value, using the data that was provided.
-     * @param request the server request
-     * @param response the server response
-     */
-	private void getMethodCreditscore(final ServerRequest request,
-            final ServerResponse response) {
-
-		Parameters params = request.queryParams();
-		
-		String firstname = params.first("firstname").get();
-		String lastname = params.first("lastname").get();
-		String dateofbirth = params.first("dateofbirth").get();
-		String ssn = params.first("ssn").get();
-		
-		logger.info("getMethodCreditscore: " + firstname + ", " + lastname + ", " + dateofbirth + ", " + ssn);
-
-		int score = calculateCreditscore(firstname, lastname, dateofbirth, ssn);
-		
-        response.send(Integer.toString(score));
-	}
-	
-	/**
-	 * calculate creditscore based on customer's properties
-	 * @param customer Json object
-	 * @return
-	 */
-	private int getCreditscore(JsonObject customer) {
-		
-		return calculateCreditscore(customer.getString("firstname"), customer.getString("lastname"),
-				customer.getString("dateofbirth"), customer.getString("ssn"));
 	}
 	
 	/**
